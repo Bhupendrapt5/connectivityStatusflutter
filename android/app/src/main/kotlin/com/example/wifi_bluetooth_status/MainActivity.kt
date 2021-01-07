@@ -19,19 +19,22 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            Log.i("info", "method call")
-            if (call.method =="changeWifi") {
+
+            when (call.method) {
+                "changeWifi" -> {
 
                     wifiStatus = call.arguments as Boolean
-                Log.i("info", "change wifi")
+                    Log.i("info", "change wifi")
                     changeWIFIStatus(wifiStatus, this.context)
                 }
-              else if  (call.method =="changeBluetooth") {
+                "changeBluetooth" -> {
+                    Log.i("info", "change bluetooth")
                     changeBluetoothStatus()
                 }
-                else {
+                else -> {
                     result.run(MethodChannel.Result::notImplemented)
                 }
+            }
             }
 
     }
@@ -56,9 +59,10 @@ class MainActivity: FlutterActivity() {
 
     private fun changeBluetoothStatus(){
        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        Log.i("info", "bluetooth ${mBluetoothAdapter.isEnabled}")
+
         if (mBluetoothAdapter.isEnabled) {
             mBluetoothAdapter.disable()
-
         } else {
             mBluetoothAdapter.enable()
         }
