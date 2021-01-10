@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
 
   stremdata() {
     subscription = _stream.receiveBroadcastStream().listen((event) {
-      print('event : $event');
+      notificationPlugin.showNotification(Map.from(event));
     });
   }
 
@@ -45,7 +45,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // notificationPlugin.showNotification();
     return MaterialApp(
       title: 'Get Status',
       theme: ThemeData(

@@ -14,7 +14,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.IOException
 
 
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
     private val CHANNEL = "in.platform/system"
     private val EVENT_CHANNEL = "connectivityStatusStream"
     private var wifiStatus: Boolean = false
@@ -38,31 +38,34 @@ class MainActivity: FlutterActivity() {
                     result.run(MethodChannel.Result::notImplemented)
                 }
             }
-            }
-        EventChannel(flutterEngine.dartExecutor.binaryMessenger, EVENT_CHANNEL).setStreamHandler(object : EventChannel.StreamHandler {
-            override fun onListen(arguments: Any?, events: EventChannel.EventSink? ) {
-                listenToConnectivity(events)
-            }
-            override fun onCancel(arguments: Any?) {
-            }
-        })
+        }
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, EVENT_CHANNEL).setStreamHandler(
+                object : EventChannel.StreamHandler {
+                    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                        val wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+                        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
+                        events?.success(mapOf<String, Boolean>("wifi" to wifi.isWifiEnabled,
+                                "bluetooth" to mBluetoothAdapter.isEnabled))
+                    }
+
+                    override fun onCancel(arguments: Any?) {
+                    }
+                })
 
     }
 
-    private fun listenToConnectivity(events: EventChannel.EventSink?){
-        val wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    private fun listenToConnectivity(events: EventChannel.EventSink?) {
 
-        events?.success(mapOf<String, Boolean>("wifi" to wifi.isWifiEnabled,"bluetooth" to mBluetoothAdapter.isEnabled))
     }
 
-    private fun changeWIFIStatus(newWifiStatus: Boolean, ctx: Context){
+    private fun changeWIFIStatus(newWifiStatus: Boolean, ctx: Context) {
 
         try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q){
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                 val panelIntent = Intent(Settings.Panel.ACTION_INTERNET_CONNECTIVITY)
                 startActivityForResult(panelIntent, 545)
-            } else{
+            } else {
                 // do something for phones running an SDK before Q
 
                 val wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
@@ -74,8 +77,8 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-    private fun changeBluetoothStatus(){
-       val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    private fun changeBluetoothStatus() {
+        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         Log.i("info", "bluetooth ${mBluetoothAdapter.isEnabled}")
 
         if (mBluetoothAdapter.isEnabled) {

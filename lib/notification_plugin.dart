@@ -64,7 +64,7 @@ class NotificationPlugin {
     });
   }
 
-  Future<void> showNotification() async {
+  Future<void> showNotification(Map<String, bool> status) async {
     var androidChannelSpecifics = AndroidNotificationDetails(
       'CHANNEL_01',
       'CHANNEL_Random',
@@ -80,8 +80,8 @@ class NotificationPlugin {
         android: androidChannelSpecifics, iOS: iosChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
       101,
-      'Test Title',
-      'Test Body', //null
+      'Connectivity Status',
+      'Wifi :${status['wifi']} -|- Bluetooth :${status['bluetooth']}', //null
       platformChannelSpecifics,
       payload: 'New Payload',
     );
