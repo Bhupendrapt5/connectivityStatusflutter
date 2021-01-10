@@ -9,15 +9,18 @@ import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.io.IOException
 
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "in.platform/system"
+    private val EVENT_CHANNEL = "connectivityStatusStream"
     private var wifiStatus: Boolean = false
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
 
             when (call.method) {
@@ -36,7 +39,21 @@ class MainActivity: FlutterActivity() {
                 }
             }
             }
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, EVENT_CHANNEL).setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(arguments: Any?, events: EventChannel.EventSink? ) {
+                listenToConnectivity(events)
+            }
+            override fun onCancel(arguments: Any?) {
+            }
+        })
 
+    }
+
+    private fun listenToConnectivity(events: EventChannel.EventSink?){
+        val wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+        val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
+        events?.success(mapOf<String, Boolean>("wifi" to wifi.isWifiEnabled,"bluetooth" to mBluetoothAdapter.isEnabled))
     }
 
     private fun changeWIFIStatus(newWifiStatus: Boolean, ctx: Context){

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 class BluetoothStatusWidget extends StatelessWidget {
-  BluetoothStatusWidget({Key key}) : super(key: key);
   static const platform = const MethodChannel('in.platform/system');
   final FlutterBlue flutterBlue = FlutterBlue.instance;
 

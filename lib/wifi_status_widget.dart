@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class WifiStatusWidget extends StatelessWidget {
-  const WifiStatusWidget({Key key}) : super(key: key);
   static const platform = const MethodChannel('in.platform/system');
   @override
   Widget build(BuildContext context) {
